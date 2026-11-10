@@ -170,7 +170,10 @@ self.onmessage = (e: MessageEvent<InMsg>) => {
         if (lastStars !== null) runner.setStars(lastStars);
         if (lastPan) runner.setPan(lastPan.x, lastPan.y);
         if (lastSections !== null) runner.setSections(lastSections);
-        if (lastTheme) runner.setTheme(lastTheme.theme, lastTheme.palette);
+        // init 已經用 msg.theme 建好主星。同一主題再 setTheme 會先收成一點再重建，
+        // 重整時這則訊息常常比 ready 早到，主星就停在那個點上。
+        if (lastTheme && lastTheme.theme !== (msg.theme ?? 'saturn'))
+          runner.setTheme(lastTheme.theme, lastTheme.palette);
         self.postMessage({ type: 'ready', backend, timing, drawables });
       } catch (err) {
         self.postMessage({ type: 'error', message: String(err) });

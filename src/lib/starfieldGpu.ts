@@ -1250,6 +1250,7 @@ export async function createStarfieldRunner(init: StarfieldInit): Promise<{
    *   「output 這張貼圖同時被寫又被讀」，接著整個 device 掉了（實際發生過，3D 被迫重建）
    */
   let pendingTheme: { theme: Theme; palette: Palette } | null = null;
+  let rigTheme: Theme = init.theme ?? 'saturn';
   let saturnVisible = false;
   let saturnAnimate = true;
   let scrollY = 0;
@@ -1369,8 +1370,9 @@ export async function createStarfieldRunner(init: StarfieldInit): Promise<{
   const applyQuality = () => {
     const factor = QUALITY_FACTOR[quality] ?? 1;
     for (const l of layers) l.points.count = Math.max(1, Math.round(l.cfg.count * factor));
-    // 最低等級連土星也收掉（它是最貴的一塊）
-    saturn.group.visible = saturnVisible && quality < 2;
+    // 星星可以減，主星不行。以前最低一級會把土星關掉：fps 量到的是「畫面多久交付一次」，
+    // 不是這一幀多貴（編譯 shader、重整、換主題都會掉到門檻以下）。降級不升回，土星就永久空白。
+    saturn.group.visible = saturnVisible;
   };
 
   let starsOn = true;
@@ -1418,8 +1420,9 @@ export async function createStarfieldRunner(init: StarfieldInit): Promise<{
       const s = saturn.update(delta, scrollY, saturnAnimate);
       saturnZooming = s.zooming;
       if (s.moving) markActive();
-      // 換主題：收成一點了（不再動）才換
-      if (pendingTheme && !saturnAnimate && !s.moving) commitTheme();
+      // 換主題：收成一點了才換。只看收放本身（zooming），不看衛星亮度與捲動——
+      // 那些會一直動（閒置提示每幀都在改亮度），等它們停的話主星就收成一點之後不再長出來。
+      if (pendingTheme && !saturnAnimate && !s.zooming) commitTheme();
       const lensAt = saturn.lensOnScreen(saturnCam, viewW, viewH);
       lensRadius.value = lensAt ? lensAt.r / viewH : 0;
       lensShadow.value = lensAt ? (0.95 * lensAt.r) / LENS_EINSTEIN / viewH : 0;
@@ -1503,6 +1506,7 @@ export async function createStarfieldRunner(init: StarfieldInit): Promise<{
     const want = pendingTheme;
     if (!want) return;
     pendingTheme = null;
+    rigTheme = want.theme;
     const visible = saturn.group.visible;
     disposeRig(saturn);
     saturn = planetFor(want.theme, want.palette);
@@ -1536,6 +1540,8 @@ export async function createStarfieldRunner(init: StarfieldInit): Promise<{
         labels?.setShow(show);
       },
       setSize(width, height, fold) {
+        // 還沒排版時 clientWidth 是 0，寫進去會把鏡頭的長寬比變成 NaN，之後主星投影不到畫面上
+        if (width < 1 || height < 1) return;
         markActive();
         viewW = width;
         viewH = height;
@@ -1569,8 +1575,7 @@ export async function createStarfieldRunner(init: StarfieldInit): Promise<{
         if (!visible) lensRadius.value = 0;
         darkDrawn = false;
         saturnAnimate = animate;
-        // 最低品質下即使呼叫顯示也不開（土星最貴）
-        saturn.group.visible = visible && quality < 2;
+        saturn.group.visible = visible;
       },
       setSatelliteGlow(glow) {
         markActive();
@@ -1601,6 +1606,9 @@ export async function createStarfieldRunner(init: StarfieldInit): Promise<{
         saturn.setSections(count);
       },
       setTheme(theme, palette) {
+        // init 已經用這個主題建好了。worker 在 ready 後會把 init 期間收到的 theme 再送一次，
+        // 不擋的話會把剛長出來的主星收成一點再重建，重建失敗就留下空白。
+        if (theme === rigTheme && !pendingTheme) return;
         markActive();
         pendingTheme = { theme, palette };
         // 顯示中：收成一點，loop 看到收完了才換；沒顯示：直接換（下次出現時本來就從一點長）

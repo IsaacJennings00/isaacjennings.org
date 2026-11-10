@@ -44,7 +44,7 @@
   },
   "nav": {
     "home": "Home",
-    "notes": "Notes",
+    "notes": "Blog",
     "more": "More",
     "backHome": "Back to home",
     "downloadResume": "Pick a resume to download",
@@ -62,7 +62,8 @@
     "skyNotes": {"saturn": "Ringed in ice, bound to give it back.", "neptune": "Known before it was seen.", "blackhole": "Light turns back; time stands still.", "betelgeuse": "Breath by breath, becoming stardust."},
     "skyStories": {"saturn": "It wears a ring of ice, and is slowly losing it.\nEnceladus breathes a mist of ice from its south pole, laying down a new ring; the old ice falls back into Saturn, grain by grain.\nThe ring you see is fading and being born at the same time.", "neptune": "It was found on paper first.\nIn 1846, someone worked out from the wandering path of Uranus that another world was hiding in the dark. The telescope followed the math, and there it was, as if it had been waiting a long time.\nIn 1989, Voyager 2 turned on its gravity and never looked back. That bent course, and four arcs of ring that never close, are what it leaves for those who travel far.", "blackhole": "This is the forbidden zone of the universe.\nLight turns back here. Time stops here.\nEverything falls in, and nothing finds its way home.\nNot one law we have written survives here.", "betelgeuse": "The shoulder of Orion takes one breath every four hundred days.\nWith each breath it casts itself into space; the dimming of 2019 was its own dust, veiling its own light.\nIt is still here, breathing slowly. But one day it will burn out and outshine every night."},
     "signIn": "Sign in",
-    "notes": "Notes",
+    "notes": "Blog",
+    "hellonoon": "HelloNoon",
     "moments": "Murmurs",
     "works": "Work",
     "collection": "Collection",
@@ -80,7 +81,7 @@
     "menu": "Menu",
     "close": "Close",
     "home": "Home",
-    "allPosts": "All {{count}} notes",
+    "allPosts": "All {{count}} posts",
     "allMoments": "All murmurs",
     "allWorks": "All {{count}} works",
     "watching": "Watching",
@@ -88,8 +89,8 @@
     "listening": "Listening",
     "recently": "Lately",
     "episode": "Ep. {{ep}}",
-    "aboutLead": "{{author}}'s personal site.",
-    "aboutAll": "About me"
+    "aboutLead": "An enthusiast of too many interests with not enough time.",
+    "aboutAll": "About"
   },
   "user": {
     "adminPanel": "Admin panel",
@@ -98,7 +99,7 @@
     "signInWithGoogle": "Sign in with Google"
   },
   "hero": {
-    "description": "{{author}}'s personal site: notes, murmurs, work and collection."
+    "description": "{{author}} — enthusiast of too many interests with not enough time."
   },
   "footer": {
     "tagline": "Stay hungry. Stay foolish.",
@@ -142,7 +143,7 @@
   },
   "home": {
     "orbit": {
-      "title": "{{author}}: notes, murmurs, work and collections",
+      "title": "{{author}}",
       "notesCount": "{{count}} posts · latest {{date}}",
       "momentsCount": "latest {{date}}",
       "worksCount": "{{count}} projects",
@@ -223,14 +224,14 @@
     "readDone": "Finished",
     "minutesLeft": "{{count}} min left",
     "sameCategory": "Also in {{name}}",
-    "title": "Notes",
-    "subtitle": "As the stars wheel on, every flicker of curiosity leaves an arc.",
+    "title": "Blog",
+    "subtitle": "Writing things down is how I find out what I think.",
     "all": "All",
     "more": "{{count}} more",
     "minutes": "{{count}} min",
-    "metaTitle": "Notes",
-    "description": "{{author}}'s notes: technical writing, learning logs and everyday essays.",
-    "heroTitle": "Notes",
+    "metaTitle": "Blog",
+    "description": "{{author}}'s blog.",
+    "heroTitle": "Blog",
     "loading": "Loading posts",
     "search": "Search posts...",
     "sort": {
@@ -414,7 +415,7 @@
   },
   "about": {
     "title": "About",
-    "description": "{{author}}: experience, skills and the road so far."
+    "description": "{{author}}, an enthusiast of too many interests with not enough time."
   },
   "portfolio": {
     "title": "Projects",
@@ -927,6 +928,6 @@
     "repoLink": "Source on GitHub"
   },
   "og": {
-    "tagline": "Someone who writes code and occasionally builds things."
+    "tagline": "An enthusiast of too many interests with not enough time."
   }
 }

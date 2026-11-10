@@ -32,6 +32,7 @@ import { siteName, siteTitle } from '@/lib/siteIdentity';
 import { BOOT_MOUNT_SCRIPT, BOOT_RING_FLAT, BOOT_SCRIPT } from '@/lib/bootRing';
 import { THEMES, defaultTheme, readersCanChoose, themeScript } from '@/lib/theme';
 import { prewarmSpaceBackdrop } from '@/components/backdrop/prewarm';
+import { LEGACY_PATHS } from '@/lib/legacyBlog';
 
 // 3D 背景在這裡就先開始準備（worker、GPU 探測、chunk），跟頁面其他工作同時進行（backdrop/prewarm）
 prewarmSpaceBackdrop();
@@ -42,6 +43,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   // （站名、作者、網址會由 router.tsx 的快取訂閱寫進 lib/siteIdentity，給 head() 與 SEO 讀）
   // 先拿站台設定：網址是哪個語系要看預設語系是誰（預設語系不帶前綴）；再載這一頁與預設語系（缺字時退回它）的字串
   beforeLoad: async ({ location, context }) => {
+    const legacy = LEGACY_PATHS[location.pathname];
+    if (legacy) throw redirect({ href: `${legacy}${location.searchStr}`, statusCode: 301 });
     await context.queryClient.query(siteConfigQueryOptions);
     // 帶著預設語系前綴的舊網址（換過預設語系的站才有）：導去不帶前綴的那一條。
     // 用暫時轉址：哪天預設語系換回來，這個前綴又是正常的網址，瀏覽器不能把轉址記住

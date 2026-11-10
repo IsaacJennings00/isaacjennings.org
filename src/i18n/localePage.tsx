@@ -8,6 +8,7 @@ import { useLocale } from '@/hooks/useLocale';
 import KoimLoader from '@/components/common/KoimLoader';
 import { seoMetaFor } from '@/seo/pageSeo';
 import { blogListJsonLd } from '@/seo/seoMeta';
+import { PAGES } from '@/data/siteSections';
 import { isPageDisabled } from '@/data/siteConfig';
 import { prefetchPageContent } from '@/data/pageContent';
 
@@ -18,6 +19,7 @@ interface PageGateContext {
 /** 站台設定把這一頁關掉了 → 404（跟打錯網址一樣，不透露這裡曾經有一頁）；
  *  開著的話順便把站長填的內容抓好（關於、作品…），SSR 首幀就是填好的樣子 */
 async function gate({ context }: PageGateContext, basePath: string) {
+  if (basePath && !PAGES.some((p) => !p.href && p.match(basePath))) throw notFound();
   if (await isPageDisabled(context.queryClient, basePath)) throw notFound();
   await prefetchPageContent(context.queryClient, basePath);
 }

@@ -69,20 +69,10 @@ struct Page {
     sub: &'static str,
 }
 
-const PAGES: [Page; 12] = [
-    // 首頁的 caps 是作者名的大寫，執行時才知道（見 page_card_html）
+const PAGES: [Page; 3] = [
     Page { key: "home", name: "", caps: "", sub: "og.tagline" },
-    Page { key: "notes", name: "siteNav.notes", caps: "NOTES", sub: "blog.subtitle" },
-    Page { key: "moments", name: "siteNav.moments", caps: "MOMENTS", sub: "thinking.subtitle" },
-    Page { key: "works", name: "siteNav.works", caps: "WORK", sub: "works.subtitle" },
-    Page { key: "collection", name: "siteNav.collection", caps: "COLLECTION", sub: "collection.subtitle" },
-    Page { key: "about", name: "siteNav.aboutAll", caps: "ABOUT", sub: "aboutFall.title" },
-    Page { key: "setup", name: "siteNav.setup", caps: "SETUP", sub: "setup.subtitle" },
-    Page { key: "log", name: "siteNav.log", caps: "LOG", sub: "log.subtitle" },
-    Page { key: "messages", name: "siteNav.messages", caps: "MESSAGES", sub: "messages.subtitle" },
-    Page { key: "photos", name: "siteNav.photos", caps: "PHOTOS", sub: "photos.subtitle" },
-    Page { key: "friends", name: "siteNav.friends", caps: "FRIENDS", sub: "friends.subtitle" },
-    Page { key: "colophon", name: "siteNav.colophon", caps: "COLOPHON", sub: "colophon.subtitle" },
+    Page { key: "notes", name: "siteNav.notes", caps: "BLOG", sub: "blog.subtitle" },
+    Page { key: "about", name: "siteNav.aboutAll", caps: "ABOUT", sub: "about.description" },
 ];
 
 /// 首頁那張的背景（主星）不需要資料：每一顆整個進程各算一次，站長換了預設天體才會算到別顆。
@@ -559,7 +549,7 @@ mod tests {
     #[test]
     fn 空分類退回手記() {
         assert!(post_card_html("t", None, "d", "zh-TW").contains("手記"));
-        assert!(post_card_html("t", Some(""), "d", "en").contains("Notes"));
+        assert!(post_card_html("t", Some(""), "d", "en").contains("Blog"));
         assert!(post_card_html("t", Some("技術"), "2026-10-13", "zh-TW").contains("技術 · 2026/10/13"));
         assert!(
             post_card_html("t", Some("技術"), "", "zh-TW").contains(">技術<"),

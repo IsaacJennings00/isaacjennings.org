@@ -33,21 +33,7 @@ const DEFAULT_PAD = { lat: 23.7, lon: 121 };
 export const LAT_LIMIT = 70;
 
 /** 介紹文字的格子，照前台的位置排：首頁、「關於」選單開頭那一句、各頁 */
-export const DESCRIBABLE = [
-  'home',
-  'aboutLead',
-  'notes',
-  'moments',
-  'works',
-  'collection',
-  'about',
-  'setup',
-  'log',
-  'messages',
-  'photos',
-  'friends',
-  'colophon',
-] as const;
+export const DESCRIBABLE = ['home', 'aboutLead', 'notes', 'about'] as const;
 
 /** 頁面開關分三組，照它們在前台出現的位置：首頁的軌道、「關於」選單、「更多」選單 */
 export const TOGGLE_GROUPS = [

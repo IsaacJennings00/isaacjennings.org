@@ -18,15 +18,19 @@ describe('頁面登記表', () => {
     expect(new Set(PAGES.map((p) => p.to)).size).toBe(PAGES.length);
   });
 
-  it('分組照登記的順序：首頁、五個主要分區、關於選單、更多選單', () => {
+  it('分組照登記的順序：首頁、Blog、About、HelloNoon', () => {
     expect(PAGES[0]?.key).toBe('home');
-    expect(MAIN_SECTIONS.map((p) => p.key)).toEqual(['notes', 'moments', 'works', 'collection', 'about']);
-    expect(ABOUT_SECTIONS.map((p) => p.key)).toEqual(['setup', 'log', 'messages']);
-    expect(MORE_SECTIONS.map((p) => p.key)).toEqual(['photos', 'friends', 'colophon']);
+    expect(MAIN_SECTIONS.map((p) => p.key)).toEqual(['notes', 'about', 'hellonoon']);
+    expect(ABOUT_SECTIONS).toEqual([]);
+    expect(MORE_SECTIONS).toEqual([]);
+    expect(MAIN_SECTIONS.find((p) => p.key === 'hellonoon')?.href).toBe('https://hellonoon.studio');
   });
 
   it('每一頁都認得自己的路徑', () => {
-    for (const p of PAGES) expect(p.match(p.to.slice(1)), p.key).toBe(true);
+    for (const p of PAGES) {
+      if (p.href) expect(p.match(''), p.key).toBe(false);
+      else expect(p.match(p.to.slice(1)), p.key).toBe(true);
+    }
   });
 
   it('能關的頁面跟後端 TOGGLEABLE_PAGES 一字不差', () => {
@@ -42,6 +46,7 @@ describe('頁面登記表', () => {
       [...src.matchAll(/Page \{ key: "([^"]+)", name: "[^"]*", caps: "([^"]*)"/g)].map((m) => [m[1], m[2]]),
     );
     for (const p of PAGES) {
+      if (p.href) continue;
       expect(og.has(p.key), `og.rs 少了 ${p.key}`).toBe(true);
       // 首頁的 caps 在 og.rs 是執行時算的（作者名的大寫），不比
       if (p.key !== 'home') expect(og.get(p.key), p.key).toBe(p.caps);

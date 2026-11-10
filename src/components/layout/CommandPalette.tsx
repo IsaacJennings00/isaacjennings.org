@@ -87,7 +87,18 @@ export default function CommandPalette() {
               {pages.map((p) => {
                 const label = p.key === 'home' ? t('commandPalette.home') : t(`siteNav.${p.key}`);
                 return (
-                  <Command.Item key={p.to} value={`${label} ${p.keywords} ${p.to}`} onSelect={() => go(p.to)}>
+                  <Command.Item
+                    key={p.to}
+                    value={`${label} ${p.keywords} ${p.to}`}
+                    onSelect={() => {
+                      if (p.href) {
+                        closeCommandPalette();
+                        window.location.assign(p.href);
+                        return;
+                      }
+                      go(p.to);
+                    }}
+                  >
                     <i className="cmdk-dot" aria-hidden="true" />
                     <span>{label}</span>
                     <span className="cmdk-meta">{p.caps}</span>

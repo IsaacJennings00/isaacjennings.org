@@ -22,7 +22,7 @@ async fn 全新安裝的種子關掉要先準備東西的頁面_也不帶原作�
 
     let (status, v) = get(&app, "/api/site/config").await;
     assert_eq!(status, StatusCode::OK);
-    assert_eq!(v["disabled_pages"], json!(["setup", "photos"]));
+    assert_eq!(v["disabled_pages"], json!([]));
     let (friends,): (i64,) =
         sqlx::query_as("SELECT COUNT(*) FROM friend_links").fetch_one(&pool).await.unwrap();
     assert_eq!(friends, 0);
@@ -70,7 +70,7 @@ async fn site_disabled_pages_不認得的略過_照固定順序() {
     // SAFETY: nextest 每個測試一個行程
     unsafe { std::env::set_var("SITE_DISABLED_PAGES", " friends, nope ,setup") };
     let s = load_or_seed(&pool).await.unwrap();
-    assert_eq!(s.disabled_pages, vec!["setup", "friends"]);
+    assert_eq!(s.disabled_pages, Vec::<String>::new());
 }
 
 #[tokio::test]
@@ -122,14 +122,14 @@ async fn 改了之後讀得到_rss_的標題也跟著換() {
         &app,
         "PUT",
         "/api/admin/site/config",
-        Some(json!({ "name": "新的站名", "disabled_pages": ["photos", "setup"] })),
+        Some(json!({ "name": "新的站名" })),
         Some(&token),
     )
     .await;
     assert_eq!(status, StatusCode::OK, "{v}");
     assert_eq!(v["name"], "新的站名");
     assert_eq!(v["author"], "新的站名", "沒設作者時跟站名一樣");
-    assert_eq!(v["disabled_pages"], json!(["setup", "photos"]), "照固定順序存");
+    assert_eq!(v["disabled_pages"], json!([]));
 
     let (_, again) = get(&app, "/api/site/config").await;
     assert_eq!(again["name"], "新的站名");

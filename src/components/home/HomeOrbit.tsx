@@ -17,13 +17,10 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { LocaleLink } from '@/i18n/locale-link';
+import { SectionLink } from '@/components/common/SectionLink';
 import { MAIN_SECTIONS } from '@/data/siteSections';
-import { useAboutContent } from '@/data/pageContent';
-import { useWorkEntries } from '@/data/works';
 import { useEnabledSections, useSiteConfig } from '@/data/siteConfig';
 import { homeDigestQueryOptions, siteStatsQueryOptions } from '@/data/homeData';
-import { watchStatsQueryOptions } from '@/data/watchData';
 import { transitionValue, type TransitionValue } from '@/lib/cssTransition';
 import { cardAt, cardShow, LABEL_FADE_MS, orbitFrame, tagAt, tagShow } from '@/lib/orbitLabels';
 import { saturnFrame } from '@/lib/saturnSpec';
@@ -75,7 +72,6 @@ export default function HomeOrbit() {
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const { data: digest } = useQuery(homeDigestQueryOptions(locale));
   const { data: stats } = useQuery(siteStatsQueryOptions);
-  const { data: watch } = useQuery(watchStatsQueryOptions);
   const sectionRef = useRef<HTMLElement>(null);
   const labelsRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const tagsRef = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -83,12 +79,6 @@ export default function HomeOrbit() {
   // 開著的主要分區，由內到外對應土星的軌道：關掉一個，最外圈那條收起來、後面的往內遞補（見 starfieldGpu 的 setSections）
   const main = useEnabledSections(MAIN_SECTIONS);
   const { author } = useSiteConfig();
-  // 作品：照建立時間由新到舊（用最後量到的數字，首頁不等 GitHub）
-  const works = useWorkEntries();
-  const newestWorks = [...works]
-    .sort((a, b) => b.fallback.created_at.localeCompare(a.fallback.created_at))
-    .map((w) => w.name);
-  const firstYear = /\d{4}/.exec(useAboutContent().chapters[0]?.year ?? '')?.[0];
   // 摺起來（CSS 的 viewport-segments）：浮動字卡換成另一半的目錄（common/FoldIndex）
   const folded = useFoldPose() !== null;
   const [flat, setFlat] = useState(false);
@@ -140,40 +130,14 @@ export default function HomeOrbit() {
   });
 
   const post = digest?.posts[0];
-  const thought = digest?.thoughts[0];
   const short = (s: string) => dotDate(parseServerDate(s), true);
-  const watchTotal = watch ? watch.animeCount + watch.filmCount + watch.tvSeriesCount : 0;
   const lines: Partial<Record<string, { line: string; n: string }>> = {
     notes: {
       line: post ? clip(post.title.split(/[：:]\s?/)[0] ?? post.title, 26) : '',
       n: stats && post ? t('home.orbit.notesCount', { count: stats.total_posts, date: short(post.created_at) }) : '',
     },
-    moments: {
-      line: thought ? clip(thought.content, 24) : '',
-      n: thought ? t('home.orbit.momentsCount', { date: short(thought.created_at) }) : '',
-    },
-    works: newestWorks.length
-      ? {
-          line: `${newestWorks.slice(0, 3).join('、')}${newestWorks.length > 3 ? '⋯' : ''}`,
-          n: t('home.orbit.worksCount', { count: newestWorks.length }),
-        }
-      : { line: '', n: '' },
-    // 一部都沒有（新站、沒接 Simkl）就跟其他幾顆一樣留白，不寫「在看 0 部動畫…」
-    collection:
-      watch && watchTotal > 0
-        ? {
-            line: t('home.orbit.collectionLine', {
-              anime: watch.animeCount,
-              films: watch.filmCount,
-              series: watch.tvSeriesCount,
-            }),
-            n: String(watchTotal),
-          }
-        : { line: '', n: '' },
-    // 第一章的年份（關於頁沒填就不寫）
-    about: firstYear
-      ? { line: t('home.orbit.aboutLine', { year: firstYear }), n: t('home.orbit.aboutCount', { year: firstYear }) }
-      : { line: '', n: '' },
+    about: { line: 'enthusiast', n: '/ɪnˈθjuːziæst/' },
+    hellonoon: { line: 'HelloNoon Studio', n: 'hellonoon.studio' },
   };
 
   useEffect(() => {
@@ -475,9 +439,9 @@ export default function HomeOrbit() {
   // 畫進 canvas 的字卡只負責被看見與被點：鍵盤與輔助技術走頁面上那份看不見的連結（下面的 .horbit-proxy），
   // 不然 Tab 會先停在 canvas 裡（它在導覽列之前），導覽的語意也會少掉這五個連結
   const cards = main.map((s, i) => (
-    <LocaleLink
+    <SectionLink
       key={s.key}
-      to={s.to}
+      section={s}
       className={drawn ? 'horbit-label is-drawn' : 'horbit-label'}
       data-pt-source={i}
       tabIndex={drawn ? -1 : undefined}
@@ -488,12 +452,12 @@ export default function HomeOrbit() {
       }}
     >
       {cardText(s)}
-    </LocaleLink>
+    </SectionLink>
   ));
   const tags = main.map((s, i) => (
-    <LocaleLink
+    <SectionLink
       key={`tag-${s.key}`}
-      to={s.to}
+      section={s}
       className={drawn ? 'horbit-tag is-drawn' : 'horbit-tag'}
       data-pt-source={i}
       tabIndex={-1}
@@ -504,7 +468,7 @@ export default function HomeOrbit() {
       }}
     >
       {s.caps}
-    </LocaleLink>
+    </SectionLink>
   ));
 
   return (
@@ -520,9 +484,9 @@ export default function HomeOrbit() {
         {host ? createPortal(cards, host) : cards}
         {drawn &&
           main.map((s, i) => (
-            <LocaleLink key={`proxy-${s.key}`} to={s.to} className="horbit-proxy sr-only" data-pt-source={i}>
+            <SectionLink key={`proxy-${s.key}`} section={s} className="horbit-proxy sr-only" data-pt-source={i}>
               {cardText(s)}
-            </LocaleLink>
+            </SectionLink>
           ))}
         {/* 常駐小標註：同一個連結的第二個點擊區（觸控可以直接點），對輔助技術藏起來，免得同一個連結念兩次。
             畫進 3D 時 portal 進那張 canvas（store/canvasLabels） */}
@@ -539,7 +503,7 @@ export default function HomeOrbit() {
                     indexRef.current[i] = el;
                   }}
                 >
-                  <LocaleLink to={s.to} className="horbit-index-a" data-pt-source={i}>
+                  <SectionLink section={s} className="horbit-index-a" data-pt-source={i}>
                     <span className="no">{pad2(i + 1)}</span>
                     <span className="zh">{t(`siteNav.${s.key}`)}</span>
                     <span className="en">{s.caps}</span>
@@ -549,7 +513,7 @@ export default function HomeOrbit() {
                         {info?.n && <span className="n">{info.n}</span>}
                       </span>
                     </span>
-                  </LocaleLink>
+                  </SectionLink>
                 </li>
               );
             })}

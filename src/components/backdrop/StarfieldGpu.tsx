@@ -291,6 +291,7 @@ export default function StarfieldGpu({
     const onScroll = () => controlRef.current?.scroll(window.scrollY);
     window.addEventListener('scroll', onScroll, { passive: true });
     let timer = 0;
+    let arrivalRaf = 0;
     let waitArrival: MutationObserver | null = null;
     const root = document.documentElement;
     if (wasHomeRef.current && !isOnHomePage && root.dataset.pt) {
@@ -300,15 +301,29 @@ export default function StarfieldGpu({
       timer = window.setTimeout(() => controlRef.current?.saturn(false, false), SATURN_COLLAPSE_MS);
     } else if (isOnHomePage && isArriving()) {
       controlRef.current?.saturn(true, false);
-      waitArrival = new MutationObserver(() => {
-        if (isArriving()) return;
+      // 開場交棒（data-boot-ring="go"）或夜色拿掉時土星才從那一點長出來。只靠 MutationObserver 會漏：
+      // 屬性在觀察掛上之前就變完、或同一幀裡變了又沒再變，回呼永遠不來，主星就停在縮放 0.0001（畫面正中空白）。
+      // 重整走 quick boot，GPU 又是熱的，正好落在這個窗口。每一幀再看一次；開場自己的 6 秒保險過了還在等，就直接長。
+      const grow = () => {
         waitArrival?.disconnect();
+        window.cancelAnimationFrame(arrivalRaf);
+        window.clearTimeout(timer);
         controlRef.current?.saturn(true, animateSaturn);
+      };
+      const landed = () => {
+        if (isArriving()) return false;
+        grow();
+        return true;
+      };
+      waitArrival = new MutationObserver(() => {
+        landed();
       });
-      // data-boot 也要看：開場的點從畫面正中間出發，而首頁的錨點就是正中間——一落地就結束（data-pt 拿掉），
-      // 但開場的 data-boot 還要再過半秒才拿掉。只看 data-pt 的話，最後那次變化就沒人接，土星永遠停在一點
-      // data-boot-ring 也要看：首頁交棒那一刻（go）土星就開始長，不等夜色拿掉
       waitArrival.observe(root, { attributes: true, attributeFilter: ['data-pt', 'data-boot', 'data-boot-ring'] });
+      const tick = () => {
+        if (!landed()) arrivalRaf = window.requestAnimationFrame(tick);
+      };
+      arrivalRaf = window.requestAnimationFrame(tick);
+      timer = window.setTimeout(grow, 6500);
     } else if (!isOnHomePage && showcaseShowing()) {
       // 手機借 3D 來出場（store/themeShowcase 的 borrowSky）：出場的指令比 3D 就緒早到，就緒時補上
       controlRef.current?.saturn(true, true);
@@ -318,6 +333,7 @@ export default function StarfieldGpu({
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.clearTimeout(timer);
+      window.cancelAnimationFrame(arrivalRaf);
       waitArrival?.disconnect();
     };
   }, [isOnHomePage, animateSaturn, backend]); // backend 變化 = runner 就緒的訊號，重新同步
@@ -354,8 +370,8 @@ export default function StarfieldGpu({
           {
             type: 'init',
             canvas: offscreen,
-            width: canvas.clientWidth,
-            height: canvas.clientHeight,
+            width: Math.max(1, canvas.clientWidth || window.innerWidth),
+            height: Math.max(1, canvas.clientHeight || window.innerHeight),
             fold: currentFold(),
             dpr: window.devicePixelRatio,
             lite: liteRef.current,
@@ -409,20 +425,22 @@ export default function StarfieldGpu({
         } else if (e.data.type === 'perf') setPerf(e.data.report ?? null);
         else if (e.data.type === 'lost') recover(e.data.message ?? 'GPU device lost');
         else if (e.data.type === 'error') {
-          // canvas 已 transfer、無法回收給主執行緒重用 → 本 session 放棄（頁面留下 CSS 星空）
-          console.warn('[StarfieldGpu] worker 初始化失敗:', e.data.message);
-          setFailed(true);
+          const message = e.data.message ?? 'worker 初始化失敗';
+          console.warn('[StarfieldGpu] worker 初始化失敗:', message);
           worker.terminate();
+          // 沒有 GPU 重試也一樣。其餘的（重整時上一頁的 device 還沒放掉、canvas 尺寸還是 0）換一張 canvas 再試，
+          // 不要第一次失敗就把主星拿掉。
+          if (message.includes('軟體渲染')) setFailed(true);
+          else recover(message);
         }
       };
       worker.addEventListener('message', onMsg);
-      const onResize = () =>
-        worker.postMessage({
-          type: 'resize',
-          width: canvas.clientWidth,
-          height: canvas.clientHeight,
-          fold: currentFold(),
-        });
+      const onResize = () => {
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+        if (width < 1 || height < 1) return;
+        worker.postMessage({ type: 'resize', width, height, fold: currentFold() });
+      };
       const onVis = () => worker.postMessage({ type: 'running', value: shouldRun() });
       // 摺疊機摺起來或攤開不一定會發 resize（見 lib/viewportFold），一起聽
       const unsubscribeFold = subscribeFold(onResize);
@@ -453,8 +471,8 @@ export default function StarfieldGpu({
             timing,
           } = await createStarfieldRunner({
             canvas,
-            width: canvas.clientWidth,
-            height: canvas.clientHeight,
+            width: Math.max(1, canvas.clientWidth || window.innerWidth),
+            height: Math.max(1, canvas.clientHeight || window.innerHeight),
             fold: currentFold(),
             dpr: window.devicePixelRatio,
             lite: liteRef.current,

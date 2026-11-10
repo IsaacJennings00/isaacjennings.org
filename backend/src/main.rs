@@ -133,6 +133,7 @@ async fn run() -> anyhow::Result<()> {
     // baseline 全 IF NOT EXISTS：對既有正式 DB 是 no-op（只記錄版本），
     // 對全新 DB / 測試 in-memory DB 建出完整 schema。
     sqlx::migrate!("./migrations").run(&pool).await?;
+    koimsurai_web_backend::seed_posts::seed(&pool).await?;
 
     // 站台設定要在建第一個管理員之前：種子看 users 表是不是空的，判斷這是全新安裝還是既有的站
     handlers::site_config::load_or_seed(&pool)

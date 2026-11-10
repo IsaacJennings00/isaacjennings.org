@@ -1,0 +1,70 @@
+.enthusiast {
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: calc(var(--page-top, 7rem) + 2rem) 1.5rem 6rem;
+  color: var(--ink-body);
+  font-family: var(--serif);
+}
+
+.enthusiast-kicker,
+.enthusiast-pron,
+.enthusiast-pos {
+  font-family: var(--mono-font);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-subtle);
+  font-size: 0.75rem;
+}
+
+.enthusiast h1 {
+  margin: 0.4rem 0 1.25rem;
+  font-family: var(--latin-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  line-height: 0.95;
+  color: var(--ink);
+}
+
+.enthusiast-summary,
+.enthusiast-def,
+.enthusiast-usage {
+  font-size: 1.125rem;
+  line-height: 1.65;
+}
+
+.enthusiast-def {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.enthusiast-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+}
+
+.enthusiast-heading h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.enthusiast-pron {
+  color: var(--signal);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.enthusiast ol {
+  padding-left: 1.25rem;
+}
+
+.enthusiast ol li + li {
+  margin-top: 0.6rem;
+}
+
+.enthusiast-usage {
+  color: var(--ink-muted);
+}

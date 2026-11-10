@@ -40,14 +40,10 @@ const KEY: &str = "site";
 ///
 /// 主要分區裡的碎念、作品、收藏可以關（首頁土星跟著少一條軌道）；手記與關於不行：
 /// 手記是 RSS、電子報、文章頁的根，關於是「關於」選單的家。
-pub const TOGGLEABLE_PAGES: [&str; 9] =
-    ["moments", "works", "collection", "setup", "log", "messages", "photos", "friends", "colophon"];
+pub const TOGGLEABLE_PAGES: [&str; 0] = [];
 
-/// 全新安裝時預設關掉的頁面（照 [`TOGGLEABLE_PAGES`] 的順序），初次設定的精靈也從這裡開始：
-///   · 設備頁要先選模式（內建圖紙、自己的圖紙）才有東西可看
-///   · 照片頁要接 NAS 或上傳資料夾
-/// 既有的站升級上來不會被關掉任何一頁（見 [`load_or_seed`]）。
-const OFF_ON_FRESH_INSTALL: [&str; 2] = ["setup", "photos"];
+/// This fork has no pages that can be turned off. Blog and About stay; HelloNoon is not a page.
+const OFF_ON_FRESH_INSTALL: [&str; 0] = [];
 
 const NAME_MAX: usize = 60;
 const DESCRIPTION_MAX: usize = 300;
@@ -106,21 +102,7 @@ pub fn launch_pad() -> LaunchPad {
 }
 
 /// 可以自己寫介紹文字的地方：首頁與各頁（前端 data/siteSections 的 key），加上「關於」選單開頭那一句
-pub const DESCRIBABLE: [&str; 13] = [
-    "home",
-    "notes",
-    "moments",
-    "works",
-    "collection",
-    "about",
-    "setup",
-    "log",
-    "messages",
-    "photos",
-    "friends",
-    "colophon",
-    "aboutLead",
-];
+pub const DESCRIBABLE: [&str; 4] = ["home", "notes", "about", "aboutLead"];
 
 /// 站上支援的語系（介面有翻譯的那五個），順序就是語系選單的順序。前端在 src/lib/locales.ts
 pub const SUPPORTED_LOCALES: [&str; 5] = ["zh-TW", "zh-CN", "en", "ja", "ko"];

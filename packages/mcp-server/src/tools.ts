@@ -744,10 +744,7 @@ export function makeTools(api: ApiClient): Tool[] {
       name: 'koimsurai_update_site_config',
       description:
         '改站台設定，只改有帶的欄位，回傳改完的整份。改完前台的快取會立刻清掉。' +
-        '\ndisabled_pages 是整份換掉不是增減：要多關一頁，先 koimsurai_get_site_config 拿現在的清單再加上去。' +
-        '\n能關的頁面：moments（碎念）、works（作品）、collection（收藏）、setup（設備）、log（航行日誌）、' +
-        'messages（留言）、photos（照片）、friends（朋友）、colophon（此站點）。' +
-        '關掉碎念／作品／收藏時首頁土星會少一條軌道。手記與關於不能關。',
+        '\nThis site does not turn pages off. Blog, About, and the HelloNoon link stay.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -756,11 +753,8 @@ export function makeTools(api: ApiClient): Tool[] {
           description: { type: 'string', description: '一句話介紹（RSS 的描述），最多 300 字' },
           disabled_pages: {
             type: 'array',
-            items: {
-              type: 'string',
-              enum: ['moments', 'works', 'collection', 'setup', 'log', 'messages', 'photos', 'friends', 'colophon'],
-            },
-            description: '要關掉的頁面（整份換掉）。給空陣列＝全部打開',
+            items: { type: 'string' },
+            description: 'Unused on this site. Send [] if a client still sends the field.',
           },
           email: { type: 'string', description: '聯絡信箱（關於選單、朋友頁、留言頁）；給空字串＝不顯示' },
           github: { type: 'string', description: 'GitHub 帳號名（不是網址）；給空字串＝不顯示' },
@@ -790,8 +784,7 @@ export function makeTools(api: ApiClient): Tool[] {
           page_descriptions: {
             type: 'object',
             description:
-              '站長自己寫的介紹文字（整份換掉）：{ 地方: { 語系: 字 } }。地方是 home、notes、moments、works、collection、' +
-              'about、setup、log、messages、photos、friends、colophon（各頁在搜尋結果裡的描述）與 aboutLead（「關於」選單開頭那一句）。' +
+              '站長自己寫的介紹文字（整份換掉）：{ 地方: { 語系: 字 } }。地方是 home、notes、about、aboutLead。' +
               '沒寫的用內建的通用句子；要改一頁，先 koimsurai_get_site_config 拿現在的整份再改。每段最多 300 字',
             additionalProperties: {
               type: 'object',

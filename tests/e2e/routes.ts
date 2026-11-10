@@ -28,6 +28,10 @@ const SKIP = [
   { re: /unsubscribe/, why: '需要退訂 token' },
   { re: /^\/\$locale/, why: '參數化語系路由；下面用實際語系另外抽樣' },
   { re: /^\/$/, why: '首頁會依 Accept-Language 302 導向，另外測' },
+  {
+    re: /^\/(thinking|portfolio|watch|bookshelf|music|setup|history|activity|messages|photos|friends|about-site|journey)/,
+    why: 'not part of this site',
+  },
 ];
 
 /** 帶參數的路由 → 用種子資料裡真的存在的 id。沒列到的參數路由會被跳過。 */

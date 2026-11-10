@@ -116,18 +116,16 @@ test.describe('初次設定', () => {
     await page.getByRole('radio', { name: /黑洞/ }).check();
     await page.getByRole('button', { name: '下一步' }).click();
 
-    // 頁面：關掉作品，星圖上那條軌道收起來、留一條「關」的虛線
+    // 這一站沒有可關的頁面：頁面那一步直接完成
     await expect(page.getByRole('heading', { name: '頁面' })).toBeVisible();
-    await page.getByRole('switch', { name: /作品/ }).click();
-    await expect(page.getByRole('switch', { name: /作品/ })).toHaveAttribute('aria-checked', 'false');
-    await expect(page.locator('.wz-ghost')).toContainText('WORK');
+    await expect(page.getByRole('switch')).toHaveCount(0);
     await page.getByRole('button', { name: '完成設定' }).click();
 
     // 完成：送出去的是剛才的答案，右邊換成真的首頁
     await expect(page.getByRole('heading', { name: '開站了' })).toBeVisible();
     expect(m.saved).toMatchObject({ name: '新的站', default_locale: 'en', theme: 'blackhole' });
     expect(m.saved?.locales).toEqual(expect.arrayContaining(['en', 'ja']));
-    expect(m.saved?.disabled_pages).toEqual(expect.arrayContaining(['works']));
+    expect(m.saved?.disabled_pages ?? []).toEqual([]);
     await expect(page.locator('.wz-sky-live iframe')).toHaveAttribute('src', '/');
   });
 

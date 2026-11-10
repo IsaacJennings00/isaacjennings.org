@@ -16,6 +16,8 @@ export interface SiteSection {
 }
 
 export interface PageDef extends SiteSection {
+  /** Set for a moon that leaves the site. `to` is unused for routing. */
+  href?: string;
   /** 放在哪裡：首頁、導覽列的主要分區（＝首頁的一顆衛星）、「關於」選單、「更多」選單 */
   group: 'home' | 'main' | 'about' | 'more';
   /**
@@ -48,122 +50,38 @@ export const PAGES: PageDef[] = [
     sitemap: { priority: '1.0', changefreq: 'weekly' },
   },
 
-  // ── 主要分區：導覽列上的五個字、首頁的五顆衛星（由內到外）──
+  // Inner to outer: Blog, About, HelloNoon. The last one leaves the site.
   {
     key: 'notes',
     to: '/blog',
-    caps: 'NOTES',
+    caps: 'BLOG',
     match: under('blog'),
     group: 'main',
     toggleable: false,
-    keywords: 'blog posts notes 文章 手記 日記',
+    keywords: 'blog posts notes',
     sitemap: { priority: '0.9', changefreq: 'daily' },
     llms: true,
   },
   {
-    key: 'moments',
-    to: '/thinking',
-    caps: 'MOMENTS',
-    match: under('thinking'),
-    group: 'main',
-    toggleable: true,
-    keywords: 'thinking moments 碎念 想法',
-  },
-  {
-    key: 'works',
-    to: '/portfolio',
-    caps: 'WORK',
-    match: under('portfolio'),
-    group: 'main',
-    toggleable: true,
-    keywords: 'portfolio works projects 作品 專案',
-  },
-  // 收藏：在看、書櫃、在聽合成一頁，網址沿用 /watch（舊的 /bookshelf、/music 轉到那一區）
-  {
-    key: 'collection',
-    to: '/watch',
-    caps: 'COLLECTION',
-    match: under('watch', 'bookshelf', 'music'),
-    group: 'main',
-    toggleable: true,
-    keywords: 'collection watch anime 動畫 電影 影集 books 書櫃 閱讀 music spotify 音樂',
-    sitemap: { priority: '0.6', changefreq: 'weekly' },
-    llms: true,
-  },
-  // 關於：跟「我」有關的幾頁（group: 'about'）也算在這一區，導覽列的琥珀點停在「關於」
-  {
     key: 'about',
     to: '/about',
     caps: 'ABOUT',
-    match: under('about', 'setup', 'messages', 'history', 'activity'),
+    match: under('about'),
     group: 'main',
     toggleable: false,
-    keywords: 'about me 關於 自我介紹',
+    keywords: 'about enthusiast',
     sitemap: { priority: '0.7', changefreq: 'monthly' },
     llms: true,
   },
-
-  // ── 收在「關於」選單裡 ──
   {
-    key: 'setup',
-    to: '/setup',
-    caps: 'SETUP',
-    match: under('setup'),
-    group: 'about',
-    toggleable: true,
-    keywords: 'setup gear 設備 工作站',
-    sitemap: { priority: '0.5', changefreq: 'monthly' },
-    llms: true,
-  },
-  {
-    key: 'log',
-    to: '/history',
-    caps: 'LOG',
-    match: under('history', 'activity'),
-    group: 'about',
-    toggleable: true,
-    keywords: 'log history activity 航行日誌 歷史 動態',
-    sitemap: { priority: '0.5', changefreq: 'daily' },
-  },
-  {
-    key: 'messages',
-    to: '/messages',
-    caps: 'MESSAGES',
-    match: under('messages'),
-    group: 'about',
-    toggleable: true,
-    keywords: 'messages 留言 guestbook contact',
-  },
-
-  // ── 收在「更多」裡 ──
-  {
-    key: 'photos',
-    to: '/photos',
-    caps: 'PHOTOS',
-    match: under('photos'),
-    group: 'more',
-    toggleable: true,
-    keywords: 'photos gallery 照片 相簿 攝影',
-    sitemap: { priority: '0.7', changefreq: 'weekly' },
-    llms: true,
-  },
-  {
-    key: 'friends',
-    to: '/friends',
-    caps: 'FRIENDS',
-    match: under('friends'),
-    group: 'more',
-    toggleable: true,
-    keywords: 'friends links 朋友 友鏈',
-  },
-  {
-    key: 'colophon',
-    to: '/about-site',
-    caps: 'COLOPHON',
-    match: under('about-site'),
-    group: 'more',
-    toggleable: true,
-    keywords: 'colophon about-site 此站點 關於本站 問答',
+    key: 'hellonoon',
+    to: 'https://hellonoon.studio',
+    href: 'https://hellonoon.studio',
+    caps: 'HELLO NOON',
+    match: () => false,
+    group: 'main',
+    toggleable: false,
+    keywords: 'hellonoon studio',
   },
 ];
 

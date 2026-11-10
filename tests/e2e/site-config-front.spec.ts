@@ -63,14 +63,11 @@ test.describe('前台跟著站台設定', () => {
     await expect(page.locator('.snav-sky.is-fixed')).toBeVisible();
   });
 
-  test('站長關掉的頁面，頂欄跟指令面板都找不到', async ({ page }) => {
-    await overrideConfig(page, { disabled_pages: ['works'] });
+  test('頂欄是 Blog、About、HelloNoon，沒有作品', async ({ page }) => {
     await page.goto('/blog');
-    await expect(nav(page).getByRole('link', { name: '作品' })).toBeVisible();
-
-    await refetchConfig(page);
     await expect(nav(page).getByRole('link', { name: '作品' })).toHaveCount(0);
     await expect(nav(page).getByRole('link', { name: '手記' })).toBeVisible();
+    await expect(nav(page).getByRole('link', { name: 'HelloNoon' })).toHaveAttribute('href', 'https://hellonoon.studio');
 
     await expect(async () => {
       if (!(await page.locator('.cmdk-backdrop').isVisible())) await page.keyboard.press('Control+k');

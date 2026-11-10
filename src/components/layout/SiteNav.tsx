@@ -15,6 +15,7 @@ import { LOCALE_LABELS, loadLocale, stripLocalePrefix } from '@/i18n/start-i18n'
 import { enabledLocales, prefixOf, type Locale } from '@/lib/locales';
 import { useAuth } from '@/contexts/auth';
 import { openCommandPalette } from '@/store/commandPaletteStore';
+import { SectionLink } from '@/components/common/SectionLink';
 import { ABOUT_SECTIONS, MAIN_SECTIONS, MORE_SECTIONS, type SiteSection } from '@/data/siteSections';
 import { useEnabledSections, useSiteConfig } from '@/data/siteConfig';
 import NavMenus, { type MenuKey } from './NavMenus';
@@ -362,20 +363,20 @@ export default function SiteNav() {
           >
             <span ref={dotRef} className="snav-dot" aria-hidden />
             {MAIN.map((it, i) => (
-              <LocaleLink
+              <SectionLink
                 key={it.key}
-                to={it.to}
+                section={it}
                 data-nav-item
                 className={i === activeMain ? 'is-on' : undefined}
                 aria-current={i === activeMain ? 'page' : undefined}
                 onMouseEnter={() => {
                   moveDotTo(i);
-                  hoverMenu(MENU_KEYS[i]);
+                  if (!it.href) hoverMenu(MENU_KEYS[i]);
                 }}
                 onFocus={() => moveDotTo(i)}
               >
                 {label(it)}
-              </LocaleLink>
+              </SectionLink>
             ))}
             <button
               type="button"
@@ -451,15 +452,15 @@ export default function SiteNav() {
       <div className="snav-menu" inert={!menuOpen} aria-label={t('siteNav.menu')}>
         <div className="snav-menu-main">
           {MAIN.map((it, i) => (
-            <LocaleLink
+            <SectionLink
               key={it.key}
-              to={it.to}
+              section={it}
               className={i === activeMain ? 'is-on' : undefined}
               aria-current={i === activeMain ? 'page' : undefined}
             >
               {label(it)}
               <span>{it.caps}</span>
-            </LocaleLink>
+            </SectionLink>
           ))}
         </div>
         <div className="snav-menu-more">

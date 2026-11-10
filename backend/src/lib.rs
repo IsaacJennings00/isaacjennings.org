@@ -26,6 +26,7 @@ pub mod net_guard;
 pub mod openapi;
 pub mod revalidate;
 pub mod router;
+pub mod seed_posts;
 pub mod state;
 pub mod ui_text;
 pub mod upstream_cache;

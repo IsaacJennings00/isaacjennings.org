@@ -22,7 +22,7 @@ const RX0 = 118;
 const DRX = 64;
 const STAR_R = 30;
 /** 衛星停在軌道上的角度（度）：錯開，標註才不會疊在一起 */
-const ANGLE: Record<string, number> = { notes: 200, moments: 320, works: 35, collection: 150, about: 255 };
+const ANGLE: Record<string, number> = { notes: 200, about: 320, hellonoon: 40 };
 
 const orbit = (slot: number) => {
   const rx = RX0 + slot * DRX;
