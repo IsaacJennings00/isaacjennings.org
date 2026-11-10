@@ -68,7 +68,7 @@
     "date-fns": "^4.4.0",
     "decimal.js-light": "^2.5.1",
     "decode-named-character-reference": "1.2.0",
-    "framer-motion": "^12.6.2",
+    "framer-motion": "^14.10.1",
     "harfbuzzjs": "1.6.3",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "i18next": "^26.4.0",
