@@ -65,6 +65,8 @@ COPY backend ./backend
 # 少了的話 include_str!／include_bytes! 編不過——不會靜靜地出一張缺字的圖
 COPY src/locales ./src/locales
 COPY public/illustrations ./public/illustrations
+# seed_posts.rs include_str!s the old blog from the repo root. Missing this, the release build fails.
+COPY content/posts ./content/posts
 RUN cargo build --release -p koimsurai-web-backend \
     && cp target/release/koimsurai-web-backend /koimsurai-web-backend
 
